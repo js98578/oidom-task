@@ -17,7 +17,7 @@ const Item = ({ node }) => {
   return (
     <Box>
       <a href={node.ogUrl}>{node.ogTitle}</a>
-      {node.childrenFile[0] && <Img fixed={node.childrenFile[0].childImageSharp.fixed} />}
+      {node.childFile && <Img fixed={node.childFile.childImageSharp.fixed} />}
       <p>{node.ogDescription}</p>
     </Box>
   );
@@ -25,14 +25,13 @@ const Item = ({ node }) => {
 
 const IndexPage = () => {
   const data = useStaticQuery(graphql`
-    query HeaderQuery {
+    query Query {
       allOgStory {
         nodes {
           ogDescription
           ogTitle
           ogUrl
-          childrenFile {
-            id
+          childFile {
             childImageSharp {
               fixed(width: 160, height: 160) {
                 ...GatsbyImageSharpFixed
@@ -44,7 +43,7 @@ const IndexPage = () => {
       }
     }
   `);
-
+  console.log(data);
   return (
     <Container>
       {data.allOgStory.nodes.map((node) => (
