@@ -10,7 +10,7 @@ exports.onCreateNode = async ({
   store,
 }) => {
   const { createNode, createNodeField } = actions;
-  if (node.internal.type === "HtmlRehype") {
+  if (node.internal.type === "File" && node.ext === ".html") {
     const parsedHTML = HTMLParser.parse(node.internal.content);
     const ogUrl = parsedHTML.querySelector("meta[property='og:url']");
     const ogTitle = parsedHTML.querySelector("meta[property='og:title']");
@@ -28,14 +28,10 @@ exports.onCreateNode = async ({
       isImage = true;
       try {
         const imageNode = await createRemoteFileNode({
-          // The source url of the remote file
           url: ogImage.attributes.content,
           parentNodeId: `story-og-${node.id.toString()}`,
-          // Gatsby's cache which the helper uses to check if the file has been downloaded already. It's passed to all Node APIs.
           getCache,
-          // The action used to create nodes
           createNode,
-          // A helper function for creating node Ids
           createNodeId: () => `story-og-img-${node.id.toString()}`,
           store,
         });
@@ -45,7 +41,6 @@ exports.onCreateNode = async ({
     }
     if (ogUrl && ogTitle && ogDescription) {
       const storyOgNode = {
-        // Required fields
         id: `story-og-${node.id.toString()}`,
         parent: node.id.toString(),
         internal: {
@@ -53,8 +48,6 @@ exports.onCreateNode = async ({
           contentDigest: createContentDigest(`story-og-${node.id.toString()}`),
         },
         children: [],
-
-        // Other fields that you want to query with graphQl
         ogDescription: ogDescription.attributes.content,
         ogUrl: ogUrl.attributes.content,
         ogTitle: ogTitle.attributes.content,
@@ -62,7 +55,6 @@ exports.onCreateNode = async ({
       if (isImage) {
         storyOgNode.children.push(`story-og-img-${node.id.toString()}`);
       }
-      // Create node with the gatsby createNode() API
       createNode(storyOgNode);
     }
   }
@@ -76,7 +68,6 @@ exports.sourceNodes = async ({
 }) => {
   const { createNode, createTypes, deleteNode } = actions;
   const dummyStoryOgNode = {
-    // Required fields
     id: "dummy",
     parent: null,
     internal: {
@@ -84,12 +75,10 @@ exports.sourceNodes = async ({
       contentDigest: createContentDigest("dummy"),
     },
     children: ["dummy1"],
-    // Other fields that you want to query with graphQl
     ogDescription: "dummy",
     ogUrl: "dummy",
     ogTitle: "dummy",
   };
-  // Create node with the gatsby createNode() API
   createNode(dummyStoryOgNode);
 
   const fetchStories = () =>
@@ -127,15 +116,10 @@ exports.sourceNodes = async ({
   scoreFilteredStories.map(async (story, i) => {
     try {
       fileNode = await createRemoteFileNode({
-        // The source url of the remote file
         url: story.url,
-        // The id of the parent node (i.e. the node to which the new remote File node will be linked to.
         parentNodeId: `story-og-${story.id.toString()}`,
-        // Gatsby's cache which the helper uses to check if the file has been downloaded already. It's passed to all Node APIs.
         getCache,
-        // The action used to create nodes
         createNode,
-        // A helper function for creating node Ids
         createNodeId: () => `${story.id}`,
         store,
         ext: ".html",
