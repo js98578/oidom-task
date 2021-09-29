@@ -15,11 +15,17 @@
     "clean": "gatsby clean"
   },
   "dependencies": {
+    "axios": "^0.21.4",
     "babel-plugin-styled-components": "^1.13.2",
     "gatsby": "^3.13.1",
+    "gatsby-plugin-sharp": "^3.14.0",
     "gatsby-plugin-styled-components": "^4.14.0",
+    "gatsby-rehype-inline-images": "^2.0.0",
+    "gatsby-source-remote-file": "^0.4.0",
+    "gatsby-transformer-rehype": "^2.0.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
+    "react-html-parser": "^2.0.2",
     "styled-components": "^5.3.1"
   }
 }
