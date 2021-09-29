@@ -43,7 +43,7 @@ const IndexPage = () => {
       }
     }
   `);
-  console.log(data);
+
   return (
     <Container>
       {data.allOgStory.nodes.map((node) => (
