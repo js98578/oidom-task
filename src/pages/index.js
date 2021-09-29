@@ -1,6 +1,7 @@
 import * as React from "react";
 import styled from "styled-components";
 import { graphql, useStaticQuery } from "gatsby";
+import Img from "gatsby-image"
 
 const Container = styled.div`
   display: flex;
@@ -12,37 +13,45 @@ const Box = styled.div`
   border: 2px solid black;
 `;
 
-const Item = (node) => {
-  console.log(node);
-  return (<Box><p>{node.node.id}</p><a href={node.node.url}>{node.node.title}</a></Box>)
-}
+const Item = ({ node }) => {
+  return (
+    <Box>
+      <a href={node.ogUrl}>{node.ogTitle}</a>
+      {node.childrenFile[0] && <Img fixed={node.childrenFile[0].childImageSharp.fixed} />}
+      <p>{node.ogDescription}</p>
+    </Box>
+  );
+};
 
 const IndexPage = () => {
   const data = useStaticQuery(graphql`
-  query HeaderQuery {
-    allStory {
-      edges {
-        node {
+    query HeaderQuery {
+      allOgStory {
+        nodes {
+          ogDescription
+          ogTitle
+          ogUrl
+          childrenFile {
+            id
+            childImageSharp {
+              fixed(width: 160, height: 160) {
+                ...GatsbyImageSharpFixed
+              }
+            }
+          }
           id
-          url
-          title
         }
       }
     }
-  }
-`)
-console.log("dataaa", data);
+  `);
 
-  return <Container>{data.allStory.edges.map((story) => (<Item key={story.node.id} node={story.node}></Item>))}</Container>;
+  return (
+    <Container>
+      {data.allOgStory.nodes.map((node) => (
+        <Item key={node.id} node={node}></Item>
+      ))}
+    </Container>
+  );
 };
 
 export default IndexPage;
-
-/* export const query = graphql`
-  query {
-    example {
-      url
-      title
-    }
-  }
-`; */
